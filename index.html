@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="js/phaser.js"></script>
+    <!-- <script type="text/javascript" src="//cdn.jsdelivr.net/npm/phaser@3.23.0/dist/phaser.js"></script> -->
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        var config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+    
+        var game = new Phaser.Game(config);
+    
+        function preload ()
+        {
+            this.load.image('sky', 'assets/background/sky.png');
+            this.load.image('mountain-back', 'assets/background/mountain-back.png');
+            this.load.image('dunes-back', 'assets/background/mountain-back1.png');
+            this.load.image('dunes-front', 'assets/background/mountain-back2.png');
+        }
+    
+        function create ()
+        {
+            this.add.image(0, 0, 'sky').setOrigin(0, 0);
+            this.add.image
+        }
+
+        function update ()
+        {
+            
+        }
+        </script>
+</body>
+</html>
