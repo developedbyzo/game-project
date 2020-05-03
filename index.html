@@ -9,6 +9,7 @@
         *{
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -33,12 +34,53 @@
             this.load.image('mountain-back', 'assets/background/mountain-back.png');
             this.load.image('dunes-back', 'assets/background/mountain-back1.png');
             this.load.image('dunes-front', 'assets/background/mountain-back2.png');
+            this.load.image('ground', 'assets/Platformer/Desert_Tileset - Ground 01.png');
+            this.load.image('ground2', 'assets/Platformer/Desert_Tileset - Ground 02.png');
+            this.load.image('ground3', 'assets/Platformer/Desert_Tileset - Ground 03.png');
+            this.load.spritesheet('samurai', 'assets/samurai-walk.png', {frameWidth: 32, frameHeight: 48});
         }
     
         function create ()
         {
             this.add.image(0, 0, 'sky').setOrigin(0, 0);
-            this.add.image
+
+            this.add.image(670, 180, 'mountain-back');
+            this.add.image(680, 180, 'dunes-back');
+            this.add.image(680, 180, 'dunes-front');
+            this.add.image(65, 665, 'ground');
+            this.add.image(190, 665, 'ground2');
+            this.add.image(310, 665, 'ground2');
+            this.add.image(430, 665, 'ground2');
+            this.add.image(550, 665, 'ground2');
+            this.add.image(670, 665, 'ground2');
+            this.add.image(790, 665, 'ground2');
+            this.add.image(910, 665, 'ground2');
+            this.add.image(1030, 665, 'ground2');
+            this.add.image(1150, 665, 'ground2');
+            this.add.image(1270, 665, 'ground3');
+
+
+            let player = this.physics.add.sprite(100, 660, 'samurai');
+
+            // this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            // this.game.stage.backgroundColor = '#697e96'
+
+            // this.skyDrop = this.game.add.tileSprite(0,
+            //     this.game.height - this.game.cache.getImage('sky').height,
+            //     this.game.width,
+            //     this.game.cache.getImage('sky').height,
+            //     'sky'
+            // );
+
+            // this.mountainBack = this.game.add.tileSprite(0,
+            //     this.game.height - this.game.cache.getImage('mountain-back').height,
+            //     this.game.width,
+            //     this.game.cache.getImage('mountain-back').height,
+            //     'mountain-back'
+            // );
+
+
         }
 
         function update ()
