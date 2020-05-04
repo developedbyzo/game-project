@@ -19,6 +19,13 @@
             type: Phaser.AUTO,
             width: window.innerWidth,
             height: window.innerHeight,
+            physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 300 },
+                debug: false
+            }
+        },
             scene: {
                 preload: preload,
                 create: create,
@@ -27,6 +34,10 @@
         };
     
         var game = new Phaser.Game(config);
+        var player;
+        var platforms;
+        var cursors;
+        var onFloor;
     
         function preload ()
         {
@@ -37,55 +48,94 @@
             this.load.image('ground', 'assets/Platformer/Desert_Tileset - Ground 01.png');
             this.load.image('ground2', 'assets/Platformer/Desert_Tileset - Ground 02.png');
             this.load.image('ground3', 'assets/Platformer/Desert_Tileset - Ground 03.png');
-            this.load.spritesheet('samurai', 'assets/samurai-walk.png', {frameWidth: 32, frameHeight: 48});
+            this.load.spritesheet('samurai', 'assets/samurai-walk3.png', 
+            {frameWidth: 66, frameHeight: 48});
         }
     
         function create ()
         {
+            //Background images
             this.add.image(0, 0, 'sky').setOrigin(0, 0);
-
             this.add.image(670, 180, 'mountain-back');
             this.add.image(680, 180, 'dunes-back');
             this.add.image(680, 180, 'dunes-front');
-            this.add.image(65, 665, 'ground');
-            this.add.image(190, 665, 'ground2');
-            this.add.image(310, 665, 'ground2');
-            this.add.image(430, 665, 'ground2');
-            this.add.image(550, 665, 'ground2');
-            this.add.image(670, 665, 'ground2');
-            this.add.image(790, 665, 'ground2');
-            this.add.image(910, 665, 'ground2');
-            this.add.image(1030, 665, 'ground2');
-            this.add.image(1150, 665, 'ground2');
-            this.add.image(1270, 665, 'ground3');
 
+            //Grouping of ground images for colliding physics
+            platforms = this.physics.add.staticGroup();
 
-            let player = this.physics.add.sprite(100, 660, 'samurai');
+            platforms.create(65, 665, 'ground');
+            platforms.create(190, 665, 'ground2');
+            platforms.create(310, 665, 'ground2');
+            platforms.create(430, 665, 'ground2');
+            platforms.create(550, 665, 'ground2');
+            platforms.create(670, 665, 'ground2');
+            platforms.create(790, 665, 'ground2');
+            platforms.create(910, 665, 'ground2');
+            platforms.create(1030, 665, 'ground2');
+            platforms.create(1150, 665, 'ground2');
+            platforms.create(1270, 665, 'ground3');
+            
+            //Creating player and giving physics to player. Allowing player to collide with objects.
+            player = this.physics.add.sprite(100, 400, 'samurai');
 
-            // this.game.physics.startSystem(Phaser.Physics.ARCADE);
+            player.setBounce(0.2);
+            player.setCollideWorldBounds(true);
+            
 
-            // this.game.stage.backgroundColor = '#697e96'
+            //Animation for player when walking to the left
+            this.anims.create({
+                key: 'left',
+                frames: this.anims.generateFrameNumbers('samurai', { start: 0, end: 7 }),
+                frameRate: 10,
+                repeat: -1
+            });
 
-            // this.skyDrop = this.game.add.tileSprite(0,
-            //     this.game.height - this.game.cache.getImage('sky').height,
-            //     this.game.width,
-            //     this.game.cache.getImage('sky').height,
-            //     'sky'
-            // );
+            //Animation for player when standing
+            this.anims.create({
+                key: 'turn',
+                frames: [ { key: 'samurai', frame: 8 } ],
+                frameRate: 20
+            });
 
-            // this.mountainBack = this.game.add.tileSprite(0,
-            //     this.game.height - this.game.cache.getImage('mountain-back').height,
-            //     this.game.width,
-            //     this.game.cache.getImage('mountain-back').height,
-            //     'mountain-back'
-            // );
+            //Animation for player when walking to the right
+            this.anims.create({
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('samurai', { start: 9, end: 16 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            //Keyboard Controller
+            cursors = this.input.keyboard.createCursorKeys();
+
+            //Physics collider for when player and platforms meet (collide) one another.
+            onFloor = this.physics.add.collider(player, platforms);
+
+            
 
 
         }
 
         function update ()
         {
-            
+            if (cursors.left.isDown){
+                player.setVelocityX(-160);
+
+                player.anims.play('left', true);
+            } else if (cursors.right.isDown) {
+                player.setVelocityX(160);
+
+                player.anims.play('right', true);
+            } else {
+                player.setVelocityX(0);
+
+                player.anims.play('turn');
+            }
+
+            if (cursors.up.isDown && player.body.touching.down) {
+                player.setVelocityY(-230);
+                // player.body.onFloor() && player.play('right' || 'left', true);
+            }
         }
         </script>
 </body>
