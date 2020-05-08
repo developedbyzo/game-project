@@ -20,12 +20,12 @@
             width: window.innerWidth,
             height: window.innerHeight,
             physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: { y: 300 },
-                debug: false
-            }
-        },
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 },
+                    debug: false
+                }
+            },
             scene: {
                 preload: preload,
                 create: create,
@@ -38,6 +38,12 @@
         var platforms;
         var cursors;
         var onFloor;
+
+        var coins;
+        var collectCoin;
+        var score = 0;
+        var scoreText;
+        var collecting;
     
         function preload ()
         {
@@ -45,11 +51,21 @@
             this.load.image('mountain-back', 'assets/background/mountain-back.png');
             this.load.image('dunes-back', 'assets/background/mountain-back1.png');
             this.load.image('dunes-front', 'assets/background/mountain-back2.png');
-            this.load.image('ground', 'assets/Platformer/Desert_Tileset - Ground 01.png');
-            this.load.image('ground2', 'assets/Platformer/Desert_Tileset - Ground 02.png');
-            this.load.image('ground3', 'assets/Platformer/Desert_Tileset - Ground 03.png');
-            this.load.spritesheet('samurai', 'assets/samurai-walk3.png', 
-            {frameWidth: 66, frameHeight: 48});
+            this.load.atlas('coin', 'assets/collectables/coin.png', 'assets/collectables/coin_atlas.json');
+            this.load.image('ground', 'assets/Platformer/ground.png');
+            this.load.image('ground2', 'assets/Platformer/ground2.png');
+            this.load.image('ground3', 'assets/Platformer/ground3.png');
+            this.load.image('floating-ground', 'assets/Platformer/floating-ground.png');
+            this.load.image('floating-ground2', 'assets/Platformer/floating-ground2.png');
+            this.load.image('floating-ground3', 'assets/Platformer/floating-ground3.png');
+            this.load.image('cactus', 'assets/Game Object/cactus.png');
+            this.load.image('cactus2', 'assets/Game Object/cactus2.png');
+            this.load.image('grass', 'assets/Game Object/grass.png');
+            this.load.image('grass2', 'assets/Game Object/grass2.png');
+            this.load.image('grass3', 'assets/Game Object/grass3.png');
+            this.load.atlas('samurai', 'assets/player/animate.png', 'assets/player/animate_atlas.json');
+            
+            // game.load.audio('item', 'assets/music/item_pickup.ogg');
         }
     
         function create ()
@@ -59,6 +75,8 @@
             this.add.image(670, 180, 'mountain-back');
             this.add.image(680, 180, 'dunes-back');
             this.add.image(680, 180, 'dunes-front');
+
+            
 
             //Grouping of ground images for colliding physics
             platforms = this.physics.add.staticGroup();
@@ -74,68 +92,113 @@
             platforms.create(1030, 665, 'ground2');
             platforms.create(1150, 665, 'ground2');
             platforms.create(1270, 665, 'ground3');
-            
-            //Creating player and giving physics to player. Allowing player to collide with objects.
-            player = this.physics.add.sprite(100, 400, 'samurai');
+            this.add.image(900, 537, 'cactus');
+            this.add.image(950, 561, 'cactus2');
 
+            platforms.create(400, 400, 'floating-ground');
+            platforms.create(520, 400, 'floating-ground3');
+            this.add.image(450, 328, 'grass');
+
+            platforms.create(750, 254, 'floating-ground');
+            platforms.create(870, 254, 'floating-ground2');
+            platforms.create(990, 254, 'floating-ground3');
+            this.add.image(900, 192, 'grass2');
+
+            platforms.create(100, 150, 'floating-ground');
+            platforms.create(220, 150, 'floating-ground3');
+
+            
+
+            // this.anims.create({
+            //     key:'coin-animate',
+            //     frames: this.anims.generateFrameNames('coin'),
+            //     frameRate: 5,
+            //     repeat: -1
+            //     });
+            // coins = this.add.sprite(800, 550, 'coin')/*.setScale(2)*/.play('coin-animate');
+            // this.add.sprite(80, 550, 'coin')/*.setScale(2)*/.play('coin-animate');
+            
+            //Creates group of coins
+            coins = this.physics.add.group({
+                key:'coin',
+                repeat: 16,
+                setXY: {x: 60, y: 0, stepX: 70}
+            });
+            //Causes the coins to bounce when they drop in
+            coins.children.iterate(function (child) {
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            })
+
+            //Creating player and giving physics to player. Allowing player to collide with objects.
+            player = this.physics.add.sprite(50, 500, 'samurai');
             player.setBounce(0.2);
             player.setCollideWorldBounds(true);
             
-
-            //Animation for player when walking to the left
+            //Animates character: Walking
             this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('samurai', { start: 0, end: 7 }),
+                key: 'walk',
+                frames: this.anims.generateFrameNames('samurai', { prefix: 'walking_0', start: 1, end: 17, zeroPad: 2 }),
                 frameRate: 10,
                 repeat: -1
             });
-
-            //Animation for player when standing
+            //Character: idle (No animation, [currently])
             this.anims.create({
-                key: 'turn',
-                frames: [ { key: 'samurai', frame: 8 } ],
-                frameRate: 20
-            });
-
-            //Animation for player when walking to the right
-            this.anims.create({
-                key: 'right',
-                frames: this.anims.generateFrameNumbers('samurai', { start: 9, end: 16 }),
-                frameRate: 10,
+                key: 'idle',
+                frames: /*[ { key: 'samurai', frame: 0 } ]*/this.anims.generateFrameNames('samurai', {prefix: 'idle_blinking_0', start: 1, end: 11, zeroPad: 2}),
+                frameRate: 5,
                 repeat: -1
             });
+
+            
 
             //Keyboard Controller
             cursors = this.input.keyboard.createCursorKeys();
 
             //Physics collider for when player and platforms meet (collide) one another.
-            onFloor = this.physics.add.collider(player, platforms);
-
+            this.physics.add.collider(player, platforms);
+            //Physics collider for when coins and platforms meet (collide) one another.
+            this.physics.add.collider(coins, platforms);
+            //Physics overlap for when player and coin overlap; It also checks if coin has been collected
+            this.physics.add.overlap(player, coins, collectCoin, null, this);
             
+            scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#000'});
 
+            function collectCoin(player, coin) {
+                coin.disableBody(true, true); //Disables coin
 
+               
+                // game.sound.play('item');// Sound effect for item pick-up
+
+                score += 10;
+                scoreText.setText('Score: ' + score);
+            }
         }
 
-        function update ()
+        function update (time, delta)
         {
             if (cursors.left.isDown){
                 player.setVelocityX(-160);
-
-                player.anims.play('left', true);
+                player.anims.play('walk', true);
+                player.flipX = true;
+                // player.anims.play('left', true);
             } else if (cursors.right.isDown) {
                 player.setVelocityX(160);
-
-                player.anims.play('right', true);
+                player.anims.play('walk', true);
+                player.flipX = false;
+                // player.anims.play('right', true);
             } else {
                 player.setVelocityX(0);
-
-                player.anims.play('turn');
+                player.anims.play('idle', true);
+                // player.anims.play('turn');
             }
 
-            if (cursors.up.isDown && player.body.touching.down) {
-                player.setVelocityY(-230);
+            if ((cursors.up.isDown || cursors.space.isDown) && player.body.touching.down) {
+                player.setVelocityY(-480);
                 // player.body.onFloor() && player.play('right' || 'left', true);
             }
+
+            
+            
         }
         </script>
 </body>

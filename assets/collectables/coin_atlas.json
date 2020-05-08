@@ -1,0 +1,86 @@
+{
+    "frames": [
+        {
+            "filename": "desert_collectable_object_-_coin__000",
+            "frame": {
+                "w": 12,
+                "h": 12,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "desert_collectable_object_-_coin__005",
+            "frame": {
+                "w": 12,
+                "h": 12,
+                "x": 12,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "desert_collectable_object_-_coin__001",
+            "frame": {
+                "w": 12,
+                "h": 12,
+                "x": 0,
+                "y": 12
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "desert_collectable_object_-_coin__002",
+            "frame": {
+                "w": 12,
+                "h": 12,
+                "x": 12,
+                "y": 12
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "desert_collectable_object_-_coin__003",
+            "frame": {
+                "w": 12,
+                "h": 12,
+                "x": 24,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "desert_collectable_object_-_coin__004",
+            "frame": {
+                "w": 12,
+                "h": 12,
+                "x": 24,
+                "y": 12
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}
